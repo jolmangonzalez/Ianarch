@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo -e "\e[34m                                     														\e[0m"
+echo -e "\e[34m                                     ██╗ █████╗ ███╗   ██╗ █████╗ ██████╗  ██████╗██╗  ██╗\e[0m"
+echo -e "\e[34m                                     ██║██╔══██╗████╗  ██║██╔══██╗██╔══██╗██╔════╝██║  ██║\e[0m"
+echo -e "\e[34m                                     ██║███████║██╔██╗ ██║███████║██████╔╝██║     ███████║\e[0m"
+echo -e "\e[34m                                     ██║██╔══██║██║╚██╗██║██╔══██║██╔══██╗██║     ██╔══██║\e[0m"
+echo -e "\e[34m                                     ██║██║  ██║██║ ╚████║██║  ██║██║  ██║╚██████╗██║  ██║\e[0m"
+echo -e "\e[34m                                     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝\e[0m"
+echo -e "\e[34m                                     														\e[0m"
+
+# variables
+# Idioma
+language=$(curl https://ipapi.co/languages | awk -F "," '{print $1}' | sed 's/-/_/g' | sed "s|$|.UTF8|")
+# Comprobar si es EUFI o BIOS
+efi=$( ls /sys/firmware/efi/ | grep -ic efivars )
+
+if [ $efi == 1 ]
+then
+    echo "Sistema UEFI"
+
+else
+    echo "Sistema BIOS"
+fi
+
