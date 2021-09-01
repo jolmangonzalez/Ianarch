@@ -1,0 +1,498 @@
+# #!/bin/bash
+ 
+# # #Muestra el menu general
+# # function _menuPrincipal()
+# # {
+# #     echo "1) menu1"
+# #     echo "2) menu2"
+# #     echo "3) Salir"
+# #     echo
+# #     echo -n "Indica una opcion: "
+# # }
+
+# # function _submenu1()
+# # {
+# #     echo
+# #     echo "1) Submenu1-1"
+# #     echo "2) Submenu1-2"
+# #     echo "3) Salir"
+# #     echo
+# #     echo -n "Indica una opcion: "
+# # }
+
+# # function _submenu2()
+# # {
+# #     echo
+# #     echo "1) Submenu2-1"
+# #     echo "2) Submenu2-2"
+# #     echo "3) Salir"
+# #     echo
+# #     echo -n "Indica una opcion: "
+# # }
+
+# # opc=0
+# # until [ $opc -eq 3 ]
+# # do
+# #     case $opc in
+# #         1)
+# #             opc1=0
+# #             until [ $opc1 -eq 3 ]
+# #             do
+# #                 case $opc1 in
+# #                     1)
+# #                         echo "menu 1 submenu 1"
+# #                         ;;
+# #                     2)
+# #                         echo "menu 1 submenu 2"
+# #                         ;;
+# #                     *)
+# #                         _submenu1
+# #                         ;;
+# #                 esac
+# #                 read opc1
+# #             done
+# #             _menuPrincipal
+# #             ;;
+# #         2)
+# #             opc2=0
+# #             until [ $opc2 -eq 3 ]
+# #             do
+# #                 case $opc2 in
+# #                     1)
+# #                         echo "menu 2 submenu 1"
+# #                         ;;
+# #                     2)
+# #                         echo "menu 2 submenu 2"
+# #                         ;;
+# #                     *)
+# #                         _submenu2
+# #                         ;;
+# #                 esac
+# #                 read opc2
+# #             done
+# #             _menuPrincipal
+# #             ;;
+# #         *)
+# #             _menuPrincipal
+# #             ;;
+# #     esac
+# #     read opc
+# # done
+# efi=$( ls /sys/firmware/efi/ | grep -ic efivars )
+# # Tamaño de la memoria RAM
+# ram=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 1024 }')
+
+# #Idioma y distribucion de teclado
+# #echo "$idioma UTF-8" > /etc/locale.gen
+# #locale-gen
+# #echo "LANG=$idioma" > /etc/locale.conf
+# #export LANG=$idioma
+
+# # Ingreso de datos
+
+# read -p "Introduce Nombre de la maquina: " hostname
+# read -p "Introduce la clave root: " contrasenaroot
+# read -p "Introduce Nombre usuario Nuevo: " usuario
+# read -p "Introduce la clave de $usuario: " contrasenausuario
+
+# #Mostrar datos
+# echo "Tu usuario: $usuario"
+# echo "Contraseña de usuario: $contrasenausuario"
+# echo "Contraseña de root: $contrasenaroot"
+
+# # Particionamiento del disco
+# printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' _
+# echo "Discos disponible: "
+# echo "print devices" | parted | grep /dev/ | awk '{if (NR!=1) {print}}'
+# printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' _
+
+# read -p "Introduce tu disco a instalar Archlinux: " disco
+# echo "Selección de Disco: $disco"
+
+# #particionando el disco
+# if [ $efi == 1 ]
+# then
+#     echo "Sistema UEFI"
+    
+
+# else
+#     echo "Sistema BIOS"
+#     sleep 1
+
+# 	read -p "Desea crear partición boot [si/no]: " boot
+# 	read -p "Desea crear partición swap [si/no]: " swap
+# 	read -p "Desea crear partición home [si/no]: " home
+
+# 	# Asignación memoria swap
+# 	if (( $(echo "$ram 2.0 " | awk '{print $1 <= $2}') ));
+# 	then
+# 		swaplinux=$(echo $ram*2.0 | bc )
+# 		echo $swaplinux
+# 	elif (( $(echo "$ram 2.0 5.0" | awk '{print ($1 > $2) && ($1 <= $3 ) }') ));
+# 	then
+#         swaplinux=2.0
+# 	else
+# 		swaplinux=$(echo $ram*0.2 | bc )
+# 	fi
+
+# 	bootsize=250M
+# 	read -p "Asigne el tamaño de la partición root (Por defecto 100%): " rootsize
+# 	read -p "Asigne la unidad de almacenaciento (Por defecto GiB): " rootunit
+# 21
+# 	if [[ $home == 'si' ]];
+# 	then
+# 		read -p "Asigne el tamaño de la partición home: " homesize
+# 	fi
+
+# 	# Creacion de particiones
+# 	if [[ $boot == 'si' && $swap == 'si' && $home == 'si' ]];
+# 	then
+
+# 		if [[ $homesize == "" ]];
+# 		then
+# 			(echo o; echo n; echo p; echo 1; echo ""; echo +${bootsize}; echo n; echo p; echo 2; echo ""; echo +${rootsize}G; echo n; echo p; echo 3; echo ""; echo +${swaplinux}G; echo n; echo p; echo 4; echo ""; echo ""; echo t; echo 3; echo 82; echo a; echo 1; echo w; echo q) | fdisk ${disco}
+# 		else
+# 			(echo o; echo n; echo p; echo 1; echo ""; echo +${bootsize}; echo n; echo p; echo 2; echo ""; echo +${rootsize}G; echo n; echo p; echo 3; echo ""; echo +${swaplinux}G; echo n; echo p; echo 4; echo ""; echo +${homesize}G; echo t; echo 3; echo 82; echo a; echo 1; echo w; echo q) | fdisk ${disco}
+# 		fi
+
+
+# 	elif [[ $boot == 'no' && $swap == 'si' && $home == 'si' ]];
+# 	then
+
+# 		if [[ $homesize == "" ]];
+# 		then
+# 			(echo o; echo n; echo p; echo 1; echo ""; echo +${rootsize}G; echo n; echo p; echo 2; echo ""; echo +${swaplinux}G; echo n; echo p; echo 3; echo ""; echo ""; echo t; echo 2; echo 82; echo a; echo 1; echo w; echo q) | fdisk ${disco}
+# 		else
+# 			(echo o; echo n; echo p; echo 1; echo ""; echo +${bootsize}; echo n; echo p; echo 2; echo ""; echo +${rootsize}G; echo n; echo p; echo 3; echo ""; echo +${swaplinux}G; echo n; echo p; echo 4; echo ""; echo +${homesize}G; echo t; echo 2; echo 82; echo a; echo 1; echo w; echo q) | fdisk ${disco}
+# 		fi
+
+# 	elif [[ $boot == 'si' && $swap == 'no' && $home == 'si' ]];
+# 	then
+
+# 		if [[ $homesize == "" ]];
+# 		then
+# 			(echo o; echo n; echo p; echo 1; echo ""; echo +${bootsize}; echo n; echo p; echo 2; echo ""; echo +${rootsize}G; echo n; echo p; echo 3; echo ""; echo ""; echo a; echo 1; echo w; echo q) | fdisk ${disco}
+# 		else
+# 			(echo o; echo n; echo p; echo 1; echo ""; echo +${bootsize}; echo n; echo p; echo 2; echo ""; echo +${rootsize}G; echo n; echo p; echo 3; echo ""; echo +${homesize}G; echo a; echo 1; echo w; echo q) | fdisk ${disco}
+# 		fi
+
+# 	elif [[ $boot == 'si' && $swap == 'si' && $home == 'no' ]];
+# 	then
+
+# 		(echo o; echo n; echo p; echo 1; echo ""; echo +${bootsize}; echo n; echo p; echo 2; echo ""; echo +${rootsize}G; echo n; echo p; echo 3; echo ""; echo +${swaplinux}G; echo n; echo p; echo 4; echo ""; echo +${homesize}G; echo t; echo 2; echo 82; echo a; echo 1; echo w; echo q) | fdisk ${disco}
+
+		
+# 	else
+
+		disksectors=$(blockdev --getsz $disco)
+		byte=$(awk "BEGIN{print $disksectors * 512}")
+
+		if [[ $byte -ge $(awk "BEGIN{print 2**10}") && $byte -lt $(awk "BEGIN{print 2**20}") ]];
+		then
+			unit=$(awk "BEGIN{print 2**10}")
+			size=$(awk "BEGIN{print $byte / $unit}")
+			space=$(echo $size"K")
+		elif [[ $byte -ge $(awk "BEGIN{print 2**20}") && $byte -lt $(awk "BEGIN{print 2**30}") ]];
+		then
+			unit=$(awk "BEGIN{print 2**20}")
+			size=$(awk "BEGIN{print $byte / $unit}")
+			space=$(echo $size"M")
+		elif [[ $byte -ge $(awk "BEGIN{print 2**30}") && $byte -lt $(awk "BEGIN{print 2**40}") ]];
+		then
+			unit=$(awk "BEGIN{print 2**30}")
+			size=$(awk "BEGIN{print $byte / $unit}")
+			space=$(echo $size"G")
+		else
+			unit=$(awk "BEGIN{print 2**40}")
+			size=$(awk "BEGIN{print $byte / $unit}")
+			space=$(echo $size"T")
+		fi
+			
+		(echo o; echo n; echo p; echo 1; echo ""; echo +${bootsize}; echo n; echo p; echo 2; echo ""; echo +${rootsize}G; echo n; echo p; echo 3; echo ""; echo +${swaplinux}G; echo n; echo p; echo 4; echo ""; echo +${homesize}G; echo t; echo 2; echo 82; echo a; echo 1; echo w; echo q) | fdisk ${disco}
+
+# 	fi
+
+#     sleep 3
+#     particion="$(cat /tmp/partition | grep /dev/ | awk '{if (NR!=1) {print}}' | sed 's/*//g' | awk -F ' ' '{print $1}')"
+
+#     echo $particion | awk -F ' ' '{print $1}' >  boot
+#     echo $particion | awk -F ' ' '{print $2}' >  swap
+#     echo $particion | awk -F ' ' '{print $3}' >  root
+#     echo $particion | awk -F ' ' '{print $4}' >  home
+#     echo ""
+#     clear
+# 	echo "Partición EFI es:" 
+# 	cat boot
+# 	echo ""
+# 	echo "Partición SWAP es:"
+# 	cat swap
+# 	echo ""
+# 	echo "Partición ROOT es:"
+# 	cat root
+# 	echo ""
+# 	echo "Partición HOME es:"
+# 	cat home
+# 	sleep 3
+
+#     echo ""
+# 	echo "Formateando Particiones"
+# 	echo ""
+# 	mkfs.ext4 $(cat root) 
+# 	mount $(cat root) /mnt 
+
+# 	mkdir -p /mnt/home
+# 	mkfs.ext4 $(cat home) 
+# 	mount $(cat home) /mnt/home
+
+# 	mkdir -p /mnt/boot
+# 	mkfs.fat -F 32 $(cat boot) 
+# 	mount $(cat boot) /mnt/boot
+
+# 	mkswap $(cat swap) 
+# 	swapon $(cat swap)
+
+# 	clear
+# 	echo ""
+# 	echo "Revise en punto de montaje en MOUNTPOINT"
+# 	echo ""
+# 	lsblk -l
+# 	sleep 5
+# 	clear
+
+# fi
+
+# clear
+# pacman -Syyu
+# pacman -Sy archlinux-keyring --noconfirm
+# clear
+# pacman -Sy reflector python rsync --noconfirm
+# reflector --verbose --latest 5 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+# clear
+# cat /etc/pacman.d/mirrorlist
+# sleep 5
+
+# echo ""
+# echo "Instalando Sistema base"
+# echo ""
+# pacstrap /mnt base base-devel nano reflector python rsync
+# clear
+
+# echo ""
+# echo "Archivo FSTAB"
+# echo ""
+
+# genfstab -p /mnt >> /mnt/etc/fstab
+# cat /mnt/etc/fstab
+# sleep 5
+# clear
+
+
+
+# #CONFIGURANDO PACMAN
+# sed -i 's/#Color/Color/g' /mnt/etc/pacman.conf
+# sed -i 's/#TotalDownload/TotalDownload/g' /mnt/etc/pacman.conf
+# sed -i 's/#VerbosePkgLists/VerbosePkgLists/g' /mnt/etc/pacman.conf
+# sed -i "37i ILoveCandy" /mnt/etc/pacman.conf
+# sed -i 's/#[multilib]/[multilib]/g' /mnt/etc/pacman.conf
+# sed -i "s/#Include = /etc/pacman.d/mirrorlist/Include = /etc/pacman.d/mirrorlist/g" /mnt/etc/pacman.conf
+# clear
+
+# #hosts
+# clear
+# echo "$hostname" > /mnt/etc/hostname
+# echo "127.0.1.1 $hostname.localdomain $hostname" > /mnt/etc/hosts
+# clear
+# echo "Hostname: $(cat /mnt/etc/hostname)"
+# echo ""
+# echo "Hosts: $(cat /mnt/etc/hosts)"
+# echo ""
+# clear
+
+
+# #USUARIO Y ADMIN
+
+# arch-chroot /mnt /bin/bash -c "(echo $rootpasswd ; echo $rootpasswd) | passwd root"
+# arch-chroot /mnt /bin/bash -c "useradd -m -g users -s /bin/bash $user"
+# arch-chroot /mnt /bin/bash -c "(echo $userpasswd ; echo $userpasswd) | passwd $user"
+
+# sed -i "80i $user ALL=(ALL) ALL"  /mnt/etc/sudoers
+
+# echo "$idioma UTF-8" > /mnt/etc/locale.gen
+# arch-chroot /mnt /bin/bash -c "locale-gen" 
+# echo "LANG=$idioma" > /mnt/etc/locale.conf
+# echo ""
+# cat /mnt/etc/locale.conf 
+# cat /mnt/etc/locale.gen
+# sleep 4
+# echo ""
+# arch-chroot /mnt /bin/bash -c "export $(cat /mnt/etc/locale.conf)" 
+# export $(cat /mnt/etc/locale.conf)
+# arch-chroot /mnt /bin/bash -c "sudo -u $user export $(cat /etc/locale.conf)"
+# export $(cat /mnt/etc/locale.conf)
+# sleep 3
+
+# clear
+# arch-chroot /mnt /bin/bash -c "pacman -Sy curl --noconfirm"
+# arch-chroot /mnt /bin/bash -c "ln -sf /usr/share/zoneinfo/$(curl https://ipapi.co/timezone) /etc/localtime"
+
+# echo "KEYMAP=la-latin1" > /mnt/etc/vconsole.conf 
+# cat /mnt/etc/vconsole.conf 
+# clear
+
+# arch-chroot /mnt /bin/bash -c "timedatectl set-timezone $(curl https://ipapi.co/timezone)"
+# arch-chroot /mnt /bin/bash -c "pacman -S ntp --noconfirm"
+# clear
+# arch-chroot /mnt /bin/bash -c "ntpd -qg"
+# arch-chroot /mnt /bin/bash -c "hwclock --systohc"
+# sleep 3
+
+# clear
+# echo ""
+# echo "Actualizando lista de MirrorList"
+# echo ""
+# arch-chroot /mnt /bin/bash -c "reflector --verbose --latest 10 --sort rate --save /etc/pacman.d/mirrorlist"
+# clear
+# cat /mnt/etc/pacman.d/mirrorlist
+# sleep 3
+# clear
+
+# #Instalación del kernel
+# arch-chroot /mnt /bin/bash -c "pacman -S linux-firmware linux linux-headers mkinitcpio --noconfirm"
+
+# if [ $uefi == 1 ]
+# then
+# clear
+# arch-chroot /mnt /bin/bash -c "pacman -S grub efibootmgr os-prober dosfstools --noconfirm"
+# echo '' 
+# echo 'Instalando EFI System >> bootx64.efi' 
+# arch-chroot /mnt /bin/bash -c 'grub-install --target=x86_64-efi --efi-directory=/efi --removable' 
+# echo '' 
+# echo 'Instalando UEFI System >> grubx64.efi' 
+# arch-chroot /mnt /bin/bash -c 'grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=Arch'
+# ######
+# sed -i "6iGRUB_CMDLINE_LINUX_DEFAULT="loglevel=3"" /mnt/etc/default/grub
+# sed -i '7d' /mnt/etc/default/grub
+# ######
+# echo ''
+# arch-chroot /mnt /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"
+# echo '' 
+# echo 'ls -l /mnt/efi' 
+# ls -l /mnt/efi 
+# echo '' 
+# echo 'Lea bien que no tenga ningún error marcado' 
+# echo '> Confirme tener las IMG de linux para el arranque' 
+# echo '> Confirme tener la carpeta de GRUB para el arranque' 
+# sleep 4
+
+# else
+# clear
+# arch-chroot /mnt /bin/bash -c "pacman -S grub os-prober --noconfirm"
+# echo '' 
+# arch-chroot /mnt /bin/bash -c "grub-install --target=i386-pc $disco"
+
+
+# sed -i "6iGRUB_CMDLINE_LINUX_DEFAULT="loglevel=3"" /mnt/etc/default/grub
+# sed -i '7d' /mnt/etc/default/grub
+
+# echo ''
+# arch-chroot /mnt /bin/bash -c "grub-mkconfig -o /boot/grub/grub.cfg"
+# echo '' 
+# echo 'ls -l /mnt/boot' 
+# ls -l /mnt/boot 
+# echo '' 
+# echo 'Lea bien que no tenga ningún error marcado' 
+# echo '> Confirme tener las IMG de linux para el arranque' 
+# echo '> Confirme tener la carpeta de GRUB para el arranque' 
+# fi
+
+
+
+# # color(){
+# #   for c;do
+# #     printf '\e[48;5;%dm%03d' $c $c
+# #   done
+# #   printf '\e[0m \n'
+# # }
+
+# # IFS=$' \t\n'
+# # color {0..39}
+# # color {40..79}
+# # color {80..119}
+# # color {120..159}
+# # color {160..199}
+# # color {200..239}
+# # color {240..255}
+# # # for ((i=0;i<6;i++));do
+# # #   color $(seq $((i*36+16)) $((i*36*51)))
+# # # done
+
+# # while opt=$(zenity --title="$title" --text="$Prompt" --list \
+# #                    --column="Options" "${options[@]}"); do
+
+# #     case "$opt" in
+# #     "${options[0]}" ) zenity --info --text="You picked $opt, option 1";;
+# #     "${options[1]}" ) zenity --info --text="You picked $opt, option 2";;
+# #     "${options[2]}" ) zenity --info --text="You picked $opt, option 3";;
+# #     *) zenity --error --text="Invalid option. Try another one.";;
+# #     esac
+
+# # done
+
+
+# # HEIGHT=15
+# # WIDTH=40
+# # CHOICE_HEIGHT=4
+# # BACKTITLE="Backtitle here"
+# # TITLE="Title here"
+# # MENU="Choose one of the following options:"
+
+# # OPTIONS=(1 "Option 1"
+# #          2 "Option 2"
+# #          3 "Option 3")
+
+# # CHOICE=$(dialog --clear \
+# #                 --backtitle "$BACKTITLE" \
+# #                 --title "$TITLE" \
+# #                 --menu "$MENU" \
+# #                 $HEIGHT $WIDTH $CHOICE_HEIGHT \
+# #                 "${OPTIONS[@]}" \
+# #                 2>&1 >/dev/tty)
+
+# # clear
+# # case $CHOICE in
+# #         1)
+# #             echo "You chose Option 1"
+# #             ;;
+# #         2)
+# #             echo "You chose Option 2"
+# #             ;;
+# #         3)
+# #             echo "You chose Option 3"
+# #             ;;
+# # esac
+
+text="Jolman González"
+
+centrado () {
+row=0
+col=$(( ($(tput cols) - ${#1}) /2 ))
+tput clear
+tput cup $row $col
+echo "$1"	
+}
+
+texto="  ____                           _     "
+
+row=0
+col=$(( ($(tput cols) - ${#texto}) /2 ))
+tput cup $row $col
+echo "$texto"
+
+
+centrado "Jolman González"
+centrado "  ____                           _     "
+centrado " |_  _|__ _ _ __   __ _ _ __ ___| |__  "
+centrado "  | |/ _\ | '_ \ / _\ | '__/ __|  _ \ "
+centrado "  | | (_| | | | | (_| | | | (__| | | |"
+centrado " |___\__,_|_| |_|\__,_|_|  \___|_| |_|"
+                                      

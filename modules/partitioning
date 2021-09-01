@@ -1,0 +1,117 @@
+#!/bin/bash
+
+swap () {
+
+    ram=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024 / 1024 }')
+
+    if (( $(echo "$ram 2.0 " | awk '{print $1 <= $2}') ));
+    then
+        swaplinux=$(echo $ram*2.0 | bc )
+    elif (( $(echo "$ram 2.0 5.0" | awk '{print ($1 > $2) && ($1 <= $3 ) }') ));
+    then
+        swaplinux=2.0
+    else
+        swaplinux=$(echo $ram*0.2 | bc )
+    fi
+}
+
+uniquepartition () {
+
+    clear
+    discosize=$(echo "print devices" | parted | grep /dev/ | awk '{if (NR!=1) {print}}' | sed '/sr/d')
+    figlet -c -t -f slant "$discosize"
+
+    disksectors=$(blockdev --getsz $disco)
+	byte=$(awk "BEGIN{print $disksectors * 512}")
+
+	if [[ $byte -ge $(awk "BEGIN{print 2**10}") && $byte -lt $(awk "BEGIN{print 2**20}") ]];
+	then
+		unit=$(awk "BEGIN{print 2**10}")
+		size=$(awk "BEGIN{print $byte / $unit}")
+		space=$(echo $size"K")
+	elif [[ $byte -ge $(awk "BEGIN{print 2**20}") && $byte -lt $(awk "BEGIN{print 2**30}") ]];
+	then
+		unit=$(awk "BEGIN{print 2**20}")
+		size=$(awk "BEGIN{print $byte / $unit}")
+		space=$(echo $size"M")
+	elif [[ $byte -ge $(awk "BEGIN{print 2**30}") && $byte -lt $(awk "BEGIN{print 2**40}") ]];
+	then
+		unit=$(awk "BEGIN{print 2**30}")
+		size=$(awk "BEGIN{print $byte / $unit}")
+		space=$(echo $size"G")
+	else
+		unit=$(awk "BEGIN{print 2**40}")
+		size=$(awk "BEGIN{print $byte / $unit}")
+		space=$(echo $size"T")
+	fi
+	# (echo o; echo n; echo p; echo ""; echo ""; echo ""; echo w; echo q) | fdisk ${disco}
+    sleep 3
+    PrincipalMenu
+}
+
+twoparticions () {
+    if [[ $( ls /sys/firmware/efi/ | grep -ic efivars ) == 1 ]];
+    then
+        echo "UEFI"
+    else
+        clear
+        figlet -c -t -f slant "Creando dos particiones"
+        PS3="Seleccione las dos particiones a crear: "
+        nparts=("/boot /root" "/root swap" "/root /home")
+        select numpart in "${nparts[@]}" "Atras";do++
+            case "$REPLY" in
+                1 ) (echo o; echo n; echo p; echo 1; echo ""; echo +${bootsize}; echo n; echo p; echo 2; echo ""; echo ""; echo n; echo p; echo 3; echo ""; echo +${swaplinux}G; echo n; echo p; echo 4; echo ""; echo ""; echo t; echo 3; echo 82; echo a; echo 1; echo w; echo q) | fdisk ${disco}
+                ;;
+                2 ) twoparticions;;
+                3 ) threeparticions;;
+                4 ) fourparticions;;
+                5 ) PrincipalMenu ;;
+            esac
+        done
+    fi
+}
+
+threeparticions () {
+    echo "Usted ha seleccionado instalar su nuevo sistema Archlinux en tres particiones"
+}
+
+fourparticions () {
+    echo "Usted ha seleccionado instalar su nuevo sistema Archlinux en cuatro particiones"
+}
+
+partitioning () {
+
+    if [ $( ls /sys/firmware/efi/ | grep -ic efivars ) == 1 ];
+    then
+        figlet -c -t -f slant "Sistema UEFI"
+        nparts=("2" "3" "4")
+        select numpart in "${nparts[@]}" "Atras";do
+            case "$REPLY" in
+                1 ) echo $opc;;
+                2 ) echo $opc;;
+                3 ) echo $opc;;
+                4 ) echo $opc;;
+                5 ) PrincipalMenu ;;
+            esac
+        done
+
+    else
+        clear
+        figlet -c -t -f slant "Sistema BIOS"
+        PS3="Seleccione cuantas particiones desea crear: "
+        nparts=("1" "2" "3" "4")
+        select numpart in "${nparts[@]}" "Atras";do
+            case "$REPLY" in
+                1 ) uniquepartition
+                ;;
+                2 ) twoparticions;;
+                3 ) threeparticions;;
+                4 ) fourparticions;;
+                5 ) PrincipalMenu ;;
+            esac
+        done
+    fi   
+}
+
+
+

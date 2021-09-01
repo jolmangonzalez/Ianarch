@@ -1,0 +1,32 @@
+#!/bin/bash
+
+PrincipalMenu () {
+  clear
+  echo $(tput initc 8  000 500 500) $(tput setaf 8)
+  figlet -c -t -f slant "Menu Principal"
+  centrado "Telegram: @Ianeph | Github: https://github.com/jolmang"
+  PS3="Seleccione una opcion: "
+  opcions=("Idioma" "Particionamiento del disco")
+  select opc in "${opcions[@]}" "Salir";do
+    case "$REPLY" in
+      1 ) clear
+          figlet -c -t -f slant "Ianarch"
+          echo "Idioma seleccionado"
+          sleep 3
+          PrincipalMenu
+          ;;
+      2 ) clear
+          figlet -c -t -f slant "Particionando el disco"
+          printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' _
+          echo "$(lsblk -d | awk '{print "/dev/" $1}' | grep 'sd\|hd\|vd\|nvme\|mmcblk')"
+          printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' _
+          echo
+          read -p "Escriba la ruta el disco a particionar: " disco
+          partitioning
+          ;;
+      3 ) break;; 
+      * ) echo "Opcion incorrecta";;
+    esac
+  done
+
+}

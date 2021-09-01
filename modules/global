@@ -1,0 +1,81 @@
+#!/bin/bash
+
+Bold=$(tput bold)
+Underline=$(tput sgr 0 1)
+Reset=$(tput sgr0)
+
+    # Regular Colors
+
+    # Reds and its shades
+red=$(          tput initc 1  500 000 000)
+carmesi=$(      tput initc 2  440 040 120)
+bermellon=$(    tput initc 3  454 132 102)
+escarlata=$(    tput initc 4  500 072 000)
+granate=$(      tput initc 5  256 000 500)
+carmin=$(       tput initc 6  300 000 48)
+amaranto=$(     tput initc 7  458 086 160)
+
+verde=$(        tput initc 8  000 500 000)
+chartreuse=$(   tput initc 9  254 500 000)
+vKelly=$(       tput initc 10 152 374 046)
+esmeralda=$(    tput initc 11 160 400 240)
+xanadu=$(       tput initc 12 230 268 240)
+jade=$(         tput initc 13 000 336 214)
+vVerones=$(     tput initc 14 000 500 000)
+arlequin=$(     tput initc 15 136 296 148)
+esparrago=$(    tput initc 16 246 320 182)
+vOliva=$(       tput initc 17 214 284 070)
+vMilitar=$(     tput initc 18 106 188 118)
+vCeledon=$(     tput initc 19 342 448 352)
+
+azul=$(         tput initc 20 000 000 500)
+aCobalto=$(     tput initc 21 000 142 342)
+aMarino=$(      tput initc 22 036 020 286)
+aPetroleo=$(    tput initc 23 002 140 198)
+zafiro=$(       tput initc 24 002 098 360)
+indigo=$(       tput initc 25 150 000 260)
+turqui=$(       tput initc 26 000 000 256)
+prusia=$(       tput initc 27 000 098 166)
+aKlein=$(       tput initc 28 000 094 334)
+aMajorelle=$(   tput initc 29 192 160 440)
+aAcero=$(       tput initc 30 352 392 444)
+
+magenta=$(      tput initc 31 500 000 500)
+fucsia=$(       tput initc 32 500 126 292)
+morado=$(       tput initc 33 394 000 500)
+magenta=$(      tput initc 34 500 000 500)
+magenta=$(      tput initc 35 500 000 500)
+magenta=$(      tput initc 36 500 000 500)
+magenta=$(      tput initc 37 500 000 500)
+magenta=$(      tput initc 38 500 000 500)
+
+Green=$( tput setaf 2)
+Yellow=$( tput setaf 3)
+Blue=$( tput setaf 4)
+Purple=$( tput setaf 5)
+Cyan=$( tput setaf 6)
+White=$( tput setaf 7)
+    # Bold
+BRed=${Bold}${Red}
+BGreen=${Bold}${Green}
+BYellow=${Bold}${Yellow}
+BBlue=${Bold}${Blue}
+BPurple=${Bold}${Purple}
+BCyan=${Bold}${Cyan}
+BWhite=${Bold}${White}
+
+
+centrado () {
+row=8
+col=$(( ($(tput cols) - ${#1}) /2 ))
+# tput clear
+tput cup $row $col
+echo "$1"	
+}
+
+check_root() { #{{{
+    if [[ "$(id -u)" != "0" ]]; then
+      error_msg "ERROR! You must execute the script as the 'root' user."
+    fi
+  }
+  

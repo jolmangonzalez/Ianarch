@@ -1,0 +1,11 @@
+#!/bin/bash
+
+connected=xrandr | grep " connected " | awk '{print $1}'
+
+if [[ $(echo $(xrandr | grep "VGA" | awk '{print $2}')) == "connected" ]];
+then
+    for l in $(xrandr | grep "VGA" | awk '{print $3}');
+    do
+        echo $l
+    done
+fi

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+KeyboardDistribution () {
+    idioma=$(curl https://ipapi.co/languages | awk -F "," '{print $1}' | sed 's/-/_/g' | sed "s|$|.UTF8|")
+
+    echo "$idioma UTF-8" > /etc/locale.gen
+    locale-gen
+    echo "LANG=$idioma" > /etc/locale.conf
+    export LANG=$idioma
+
+    sleep 3
+}
